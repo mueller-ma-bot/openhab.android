@@ -20,8 +20,6 @@
     <string name="drawer_close">Συρτάρι-κλειστό</string>
     <string name="drawer_open">Συρτάρι-ανοικτό</string>
     <string name="erorr_invalid_url">Παρακαλώ εισάγετε ενα σωστό URL της μορφής \'πρωτόκολλο://διακομιστής:πόρτα/\'</string>
-    <string name="erorr_no_wifi_mcast_permission">H άδεια CHANGE_WIFI_MULTICAST_STATE δεν εγκρίθηκε, η ανεύρεση του openHAB θα απενεργοποιηθεί!</string>
-    <string name="erorr_no_wifi_state_permission">H άδεια ACCESS_WIFI_STATE δεν εγκρίθηκε, η ανεύρεση του openHAB θα απενεργοποιηθεί!</string>
     <string name="error_authentication_failed">Η αυθεντικοποίηση απέτυχε. Παρακαλώ ελέξτε τις ρυθμίσεις του ονόματος χρήστη και κωδικού.</string>
     <string name="error_connection_failed">Η σύνδεση στον διακομιστή απέτυχε</string>
     <string name="error_connection_sslhandshake_failed">Η διαδικασία SSL Handshake απέτυχε - ίσως χρειάζεστε ένα έγκυρο πιστοποιητικό πελάτη</string>
