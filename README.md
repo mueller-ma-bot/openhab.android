@@ -1,5 +1,7 @@
 # openHAB Android Client
 
+<img src="https://travis-ci.org/mueller-ma-bot/openhab.android.svg?branch=master">
+
 <img alt="Logo" src="screenshots/icon.png" width="100">
 
 ## Introduction
