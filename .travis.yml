@@ -8,7 +8,8 @@ android:
     - android-25
     - add-on
     - extra
-    - extras
-
+    
 script:
+    - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+    - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
     - ./gradlew build connectedCheck
