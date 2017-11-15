@@ -8,6 +8,7 @@ android:
     - android-25
     - add-on
     - extra
+    - extras
 
 script:
     - ./gradlew build connectedCheck
