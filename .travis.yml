@@ -3,7 +3,7 @@ jdk: oraclejdk8
 
 before_cache:
   - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
-  - find . -name "*.lock" -exec rm -rf {} \;
+  - find . -name "*.lock" -exec rm -rfv {} \;
   - cd ${TRAVIS_BUILD_DIR}
 
 cache:
@@ -22,8 +22,8 @@ android:
     - tools # Update tools from revision 24.4.1 to 25.2.5
 
 install:
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" > /dev/null 2>&1
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" > /dev/null 2>&1
+  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
   # Show version and download Gradle Wrapper if it's not already cached
   - ./gradlew --version
   # Check components status
@@ -31,8 +31,8 @@ install:
 
 script:
   - ./gradlew clean build
+  - ./gradlew test
   
 after_script:
-  # Show tests and lint results
-  - cat ${TRAVIS_BUILD_DIR}/*/build/outputs/androidTest-results/connected/*
+  # Show lint results
   - cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
