@@ -1,11 +1,10 @@
 language: android
 jdk: oraclejdk8
-sudo: required # false for Container-Based Infrastructure, required for Sudo-enabled Infrastructure
 
 before_cache:
-  - rm -f ${TRAVIS_BUILD_DIR}/gradle/caches/modules-2/modules-2.lock # Avoid to repack it due locks
-  - rm -f ${TRAVIS_BUILD_DIR}/gradle/caches/3.3/classAnalysis/classAnalysis.lock
-  - rm -f ${TRAVIS_BUILD_DIR}/gradle/caches/3.3/jarSnapshots/jarSnapshots.lock
+  - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
+  - find . -name "*.lock" -exec rm -rf {} \;
+  - cd ${TRAVIS_BUILD_DIR}
 
 cache:
   directories:
@@ -22,81 +21,18 @@ android:
     - platform-tools # Update platform-tools to revision 25.0.3+
     - tools # Update tools from revision 24.4.1 to 25.2.5
 
-env:
-  global:
-    - API=25 # Android API level 25 by default
-    - TAG=google_apis # Google APIs by default, alternatively use default
-    - ABI=x86_64 # ARM ABI v7a by default
-    - QEMU_AUDIO_DRV=none # Disable emulator audio to avoid warning
-    - GRADLE_USER_HOME="${TRAVIS_BUILD_DIR}/gradle" # Change location for Gradle Wrapper and cache
-    - ADB_INSTALL_TIMEOUT=20 # minutes (2 minutes by default)
-
-matrix:
-  include: # More Emulator API levels to build in parallel
-    - env: API=24
-    - env: API=23
-    - env: API=22
-  allow_failures:
-    - env: API=23
-    - env: API=22
-  fast_finish: false
-
-before_install:
-  - export EMULATOR="system-images;android-${API};${TAG};${ABI}" # Used to install/create emulator
-  - echo 'count=0' > /home/travis/.android/repositories.cfg # Avoid warning
-
 install:
-  # List and delete unnecessary components to free space
-  - sdkmanager --uninstall "system-images;android-15;default;armeabi-v7a" > /dev/null 2>&1
-  - sdkmanager --uninstall "system-images;android-16;default;armeabi-v7a" > /dev/null 2>&1
-  - sdkmanager --uninstall "system-images;android-17;default;armeabi-v7a" > /dev/null 2>&1
-  - sdkmanager --uninstall "system-images;android-18;default;armeabi-v7a" > /dev/null 2>&1
-  - sdkmanager --uninstall "system-images;android-19;default;armeabi-v7a" > /dev/null 2>&1
-  - sdkmanager --uninstall "system-images;android-21;default;armeabi-v7a" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-10" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-15" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-16" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-17" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-18" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-19" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-20" > /dev/null 2>&1
-  - sdkmanager --uninstall "platforms;android-21" > /dev/null 2>&1
-  - sdkmanager --uninstall "build-tools;21.1.2" > /dev/null 2>&1
-  # Update sdk tools to latest version and install/update components
-  - echo yes | sdkmanager "tools" > /dev/null 2>&1
-  - echo yes | sdkmanager "platforms;android-25" > /dev/null 2>&1 # Latest platform required by SDK tools
-  - echo yes | sdkmanager "platforms;android-${API}" > /dev/null 2>&1 # Android platform required by emulator
-  - echo yes | sdkmanager "extras;android;m2repository" > /dev/null 2>&1
-  - echo yes | sdkmanager "extras;google;m2repository" > /dev/null 2>&1
   - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" > /dev/null 2>&1
   - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" > /dev/null 2>&1
-  - echo yes | sdkmanager "$EMULATOR" # Install emulator system image
-  # Create and start emulator
-  - echo no | avdmanager create avd -n acib -k "$EMULATOR" -f --abi "$ABI" --tag "$TAG"
-  - emulator -avd acib -engine classic -no-window -camera-back none -camera-front none -verbose -qemu -m 512 &
-  # Start adbd, wait for device connected and show android serial
-  - adb wait-for-device get-serialno
   # Show version and download Gradle Wrapper if it's not already cached
-  - cd ${TRAVIS_BUILD_DIR}/${DIR} && ./gradlew --version
-  # Clean project and download missing dependencies and components
-  - cd ${TRAVIS_BUILD_DIR}/${DIR} && ./gradlew clean build
+  - ./gradlew --version
   # Check components status
   - sdkmanager --list || true
 
-before_script:
-  # Wait for emulator fully-booted and disable animations
-  - android-wait-for-emulator
-  - adb shell settings put global window_animation_scale 0 &
-  - adb shell settings put global transition_animation_scale 0 &
-  - adb shell settings put global animator_duration_scale 0 &
-  - sleep 30
-  - adb shell input keyevent 82 &
-
 script:
-  # Run all device checks
-  - cd ${TRAVIS_BUILD_DIR}/${DIR} && ./gradlew connectedCheck
-
+  - ./gradlew clean build
+  
 after_script:
   # Show tests and lint results
-  - cat ${TRAVIS_BUILD_DIR}/${DIR}/*/build/outputs/androidTest-results/connected/*
-  - cat ${TRAVIS_BUILD_DIR}/${DIR}/*/build/reports/lint-results.xml
+  - cat ${TRAVIS_BUILD_DIR}/*/build/outputs/androidTest-results/connected/*
+  - cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
