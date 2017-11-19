@@ -37,3 +37,6 @@ script:
 after_script:
   # Show lint results
   - cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
