@@ -34,7 +34,7 @@ install:
   - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
   - echo "y" | android update sdk -a --no-ui --filter ${ANDROID_TARGET}
   - echo "y" | android update sdk -a --no-ui --filter sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
-  - echo yes | sdkmanager "system-images;android-${API};${TAG};${ABI}"
+  - echo yes | sdkmanager "system-images;android-${ANDROID_TARGET};${TAG};${ANDROID_ABI}"
   # Show version and download Gradle Wrapper if it's not already cached
   - ./gradlew --version
   # Check components status
