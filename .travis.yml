@@ -6,6 +6,7 @@ env:
    - ANDROID_TARGET=android-26
    - ANDROID_ABI=x86
    - TAG=google_apis
+   - function emulator { cd "$(dirname "$(which emulator)")" && ./emulator "$@"; }
   
 before_cache:
   - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
