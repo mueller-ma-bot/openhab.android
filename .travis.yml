@@ -42,7 +42,7 @@ install:
   - sdkmanager --list || true
 
 script:
-  - android list targets
+  - android list target
   - ./gradlew clean build
   - ./gradlew test
   - ./gradlew jacocoTestReport assembleAndroidTest
