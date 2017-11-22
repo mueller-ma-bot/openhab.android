@@ -7,6 +7,7 @@ env:
    - ANDROID_ABI=x86
    - TAG=google_apis
    - function emulator { cd "$(dirname "$(which emulator)")" && ./emulator "$@"; }
+   - $emulator="/usr/local/android-sdk/tools/emulator"
   
 before_cache:
   - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
@@ -48,7 +49,7 @@ script:
   - ./gradlew jacocoTestReport assembleAndroidTest
   - echo no | android create avd --force -n test --abi $ANDROID_ABI -k "system-images;android-26;google_apis_playstore;x86"
   - type -a emulator
-  - emulator -avd test -no-skin -no-audio -no-window &
+  - $emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
   - ./gradlew connectedCheck
