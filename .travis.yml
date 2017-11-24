@@ -47,7 +47,7 @@ script:
   - ./gradlew clean build
   - ./gradlew test
   - ./gradlew jacocoTestReport assembleAndroidTest
-  - echo no | android create avd --force -n test --abi $ANDROID_ABI -k "system-images;android-26;google_apis_playstore;x86"
+  - echo no | android create avd --force -n test --abi $ANDROID_ABI -k "system-images;${ANDROID_TARGET};google_apis_playstore;${ANDROID_ABI}"
   - type -a emulator
   - $emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
