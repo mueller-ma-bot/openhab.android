@@ -3,11 +3,9 @@ jdk: oraclejdk8
 
 env:
   global:
-   - ANDROID_TARGET=android-26
-   - ANDROID_ABI=armeabi-v7a
    - TAG=google_apis
-   - function emulator { cd "$(dirname "$(which emulator)")" && ./emulator "$@"; }
-   - $emulator="/usr/local/android-sdk/tools/emulator"
+  matrix:
+   - ANDROID_TARGET=android-21  ANDROID_ABI=armeabi-v7a
   
 before_cache:
   - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
@@ -23,7 +21,7 @@ notifications:
   email: false
 
 android:
-  components: # Cookbooks version: https://github.com/travis-ci/travis-cookbooks/tree/9c6cd11
+  components:
     - tools # Update preinstalled tools from revision 24.0.2 to 24.4.1
     - build-tools-25.0.2 # Match build-tools version used in build.gradle
     - platform-tools # Update platform-tools to revision 25.0.3+
@@ -34,9 +32,6 @@ android:
 install:
   - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
   - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
-  - echo "y" | android update sdk -a --no-ui --filter ${ANDROID_TARGET}
-  - echo "y" | android update sdk -a --no-ui --filter sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
-  - echo yes | sdkmanager "system-images;${ANDROID_TARGET};google_apis_playstore;${ANDROID_ABI}"
   # Show version and download Gradle Wrapper if it's not already cached
   - ./gradlew --version
   # Check components status
@@ -47,12 +42,10 @@ script:
   - ./gradlew clean build
   - ./gradlew test
   - ./gradlew jacocoTestReport assembleAndroidTest
-  - echo no | android create avd --force -n test --abi $ANDROID_ABI -k "system-images;${ANDROID_TARGET};google_apis_playstore;${ANDROID_ABI}"
-  - type -a emulator
-  - $emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-  - ./gradlew connectedCheck
+  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - adb wait-for-device
+  - adb shell input keyevent 82 &
   
 after_script:
   # Show lint results
