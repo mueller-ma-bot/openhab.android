@@ -28,6 +28,7 @@ android:
     - tools # Update tools from revision 24.4.1 to 25.2.5
     - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
     - android-${ANDROID_TARGET}
+    - sys-img-armeabi-v7a-android-21
 
 install:
   - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
