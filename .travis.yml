@@ -3,10 +3,7 @@ jdk: oraclejdk8
 
 env:
   global:
-   - TAG=google_apis
    - ADB_INSTALL_TIMEOUT=10
-   - ANDROID_TARGET=android-21
-   - ANDROID_ABI=armeabi-v7a
   
 before_cache:
   - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
@@ -23,34 +20,30 @@ notifications:
 
 android:
   components:
-    - tools # Update preinstalled tools from revision 24.0.2 to 24.4.1
-    - build-tools-25.0.2 # Match build-tools version used in build.gradle
-    - platform-tools # Update platform-tools to revision 25.0.3+
-    - tools # Update tools from revision 24.4.1 to 25.2.5
-    - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
-    - android-${ANDROID_TARGET}
-    - sys-img-armeabi-v7a-android-21
+    - tools
+    - build-tools-25.0.2
+    - platform-tools
+    - tools
+    - sys-img-armeabi-v7a-android-22
 
 install:
-  #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-  #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
-  - echo "y" | android update sdk -a --no-ui --filter ${ANDROID_TARGET}
-  - echo "y" | android update sdk -a --no-ui --filter sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
-  - echo yes | sdkmanager "system-images;${ANDROID_TARGET};${ANDROID_ABI}"
+  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
   # Show version and download Gradle Wrapper if it's not already cached
   - ./gradlew --version
   # Check components status
   - sdkmanager --list || true
+  
+  # Emulator Management: Create, Start and Wait
+before_script:
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+  - emulator -avd test -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 
 script:
   - android list target
-  #- ./gradlew clean build
-  #- ./gradlew test
-  #- ./gradlew jacocoTestReport assembleAndroidTest
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - adb wait-for-device
-  - adb shell input keyevent 82 &
+  - ./gradlew build connectedCheck test jacocoTestReport
   
 after_script:
   # Show lint results
