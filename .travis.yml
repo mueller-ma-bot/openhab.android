@@ -31,8 +31,8 @@ android:
     - sys-img-armeabi-v7a-android-21
 
 install:
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+  #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+  #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
   # Show version and download Gradle Wrapper if it's not already cached
   - ./gradlew --version
   # Check components status
@@ -40,9 +40,9 @@ install:
 
 script:
   - android list target
-  - ./gradlew clean build
-  - ./gradlew test
-  - ./gradlew jacocoTestReport assembleAndroidTest
+  #- ./gradlew clean build
+  #- ./gradlew test
+  #- ./gradlew jacocoTestReport assembleAndroidTest
   - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
   - emulator -avd test -no-skin -no-audio -no-window &
   - adb wait-for-device
