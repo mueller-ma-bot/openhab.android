@@ -1,53 +1,53 @@
 language: android
 jdk: oraclejdk8
-
 env:
   global:
-   - ADB_INSTALL_TIMEOUT=10
-  
+  - secure: fMBUkSsCBTw/U907w7Xm/yNzw4lq9yt7zFy0JyEZrA543LI7zQRIclIOtsDTUs0bwY+4KI08MNoYPLJ4TQhSJaH4wQ8b9C5TRsqXNfc0V718TcuYqSXqU6VPRVtX46/fCEWv/HAs0ksUKrHIlpWOwLPQpYDcKxwwlUndaakYKJ8=
 before_cache:
-  - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
-  - find . -name "*.lock" -exec rm -rfv {} \;
-  - cd ${TRAVIS_BUILD_DIR}
-
+- cd ${TRAVIS_BUILD_DIR}/gradle/caches/
+- find . -name "*.lock" -exec rm -rfv {} \;
+- cd ${TRAVIS_BUILD_DIR}
 cache:
   directories:
-    - ${TRAVIS_BUILD_DIR}/gradle/caches/
-    - ${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/
-
+  - "${TRAVIS_BUILD_DIR}/gradle/caches/"
+  - "${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/"
 notifications:
   email: false
-
 android:
   components:
-    - tools
-    - build-tools-25.0.2
-    - platform-tools
-    - tools
-    - sys-img-armeabi-v7a-android-22
-
+  - tools
+  - build-tools-25.0.2
+  - platform-tools
+  - tools
 install:
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
-  # Show version and download Gradle Wrapper if it's not already cached
-  - ./gradlew --version
-  # Check components status
-  - sdkmanager --list || true
-  
-  # Emulator Management: Create, Start and Wait
-before_script:
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-  - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
-
+- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+- "./gradlew --version"
+- sdkmanager --list || true
 script:
-  - android list target
-  - ./gradlew build connectedCheck test jacocoTestReport
-  
+- "./gradlew clean build"
+- "./gradlew test"
 after_script:
-  # Show lint results
-  - cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_903a93ed2309_key -iv $encrypted_903a93ed2309_iv
+  -in keystore.enc -out keystore -d
+- cp $TRAVIS_BUILD_DIR/keystore $HOME
+- cd mobile/build/outputs/apk/full/release
+- jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore $HOME/keystore
+  -storepass $storepass mobile-full-release-unsigned.apk sign
+- jarsigner -verify mobile-full-release-unsigned.apk
+- "${ANDROID_HOME}/build-tools/25.0.2/zipalign -v 4 mobile-full-release-unsigned.apk mobile-full-release.apk"
+deploy:
+  provider: releases
+  prerelease: true
+  file: mobile-full-release.apk
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: openhab/openhab.android
+    jdk: oraclejdk8
+    branch: master
+    tags: true
+  api_key:
+    secure: JaDHY9PaBF625dfulN8ygmOvBk3ZDmnZZDr7IPwqJ9hZ+4WzS85om8F9+bgQlZTDDVUeaNZ03ZkfRZ81g9D0EEHF5WSFqgN8aUcNoAa8ViBFAQUeO1uTjVkiP0G7JOVRyW59HTTk6Cjr5eiGKkmeIGT9KgUUi+4Bw/6Quag8f8Y=
