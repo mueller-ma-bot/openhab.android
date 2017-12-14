@@ -27,6 +27,8 @@ install:
 script:
 - ./gradlew clean assemble
 - ./gradlew test
+- echo "--" > .adjust_token
+- ./gradlew jacocoTestReport
 after_script:
 - cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
 before_deploy:
