@@ -3,6 +3,9 @@ jdk: oraclejdk8
 env:
   global:
   - secure: fMBUkSsCBTw/U907w7Xm/yNzw4lq9yt7zFy0JyEZrA543LI7zQRIclIOtsDTUs0bwY+4KI08MNoYPLJ4TQhSJaH4wQ8b9C5TRsqXNfc0V718TcuYqSXqU6VPRVtX46/fCEWv/HAs0ksUKrHIlpWOwLPQpYDcKxwwlUndaakYKJ8=
+  - ANDROID_HOME="/sdk"
+  - PATH="$PATH:${ANDROID_HOME}/tools"
+  - DEBIAN_FRONTEND=noninteractive
 before_cache:
 - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
 - find . -name "*.lock" -exec rm -rfv {} \;
@@ -20,15 +23,21 @@ android:
   - platform-tools
   - tools
 install:
-- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+- curl -s https://dl.google.com/android/repository/sdk-tools-linux-${VERSION_SDK_TOOLS}.zip > /sdk.zip && unzip /sdk.zip -d /sdk && rm -v /sdk.zip
+- mkdir -p $ANDROID_HOME/licenses/ && echo "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_HOME/licenses/android-sdk-license && echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
+- mkdir -p ~/.android
+- touch ~/.android/repositories.cfg
+- ${ANDROID_HOME}/tools/bin/sdkmanager --update
+- ${ANDROID_HOME}/tools/bin/sdkmanager "add-ons;addon-google_apis-google-24 build-tools;26.0.2 extras;android;m2repository extras;google;m2repository extras;google;google_play_services extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2 extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2 platform-tools platforms;android-26"
+#- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+#- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
 - ./gradlew --version
 - sdkmanager --list || true
 script:
 - ./gradlew clean assemble
 - ./gradlew test
 - echo "--" > .adjust_token
-- ./gradlew jacocoTestReport
+# - ./gradlew jacocoTestReport
 after_script:
 - cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
 after_success:
