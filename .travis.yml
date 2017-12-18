@@ -3,7 +3,7 @@ jdk: oraclejdk8
 env:
   global:
   - secure: fMBUkSsCBTw/U907w7Xm/yNzw4lq9yt7zFy0JyEZrA543LI7zQRIclIOtsDTUs0bwY+4KI08MNoYPLJ4TQhSJaH4wQ8b9C5TRsqXNfc0V718TcuYqSXqU6VPRVtX46/fCEWv/HAs0ksUKrHIlpWOwLPQpYDcKxwwlUndaakYKJ8=
-  - ANDROID_HOME="/sdk"
+  - ANDROID_HOME="/home/travis/build/mueller-ma-bot/sdk"
   - PATH="$PATH:${ANDROID_HOME}/tools"
   - DEBIAN_FRONTEND=noninteractive
 before_cache:
@@ -23,7 +23,7 @@ android:
   - platform-tools
   - tools
 install:
-- curl -s https://dl.google.com/android/repository/sdk-tools-linux-${VERSION_SDK_TOOLS}.zip > /sdk.zip && unzip /sdk.zip -d /sdk && rm -v /sdk.zip
+- curl -s https://dl.google.com/android/repository/sdk-tools-linux-${VERSION_SDK_TOOLS}.zip > /home/travis/build/mueller-ma-bot/sdk.zip && unzip /home/travis/build/mueller-ma-bot/sdk.zip -d /home/travis/build/mueller-ma-bot/sdk && rm -v /home/travis/build/mueller-ma-bot/sdk.zip
 - mkdir -p $ANDROID_HOME/licenses/ && echo "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_HOME/licenses/android-sdk-license && echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
 - mkdir -p ~/.android
 - touch ~/.android/repositories.cfg
