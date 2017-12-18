@@ -6,6 +6,7 @@ env:
   - ANDROID_HOME="/home/travis/build/mueller-ma-bot/sdk"
   - PATH="$PATH:${ANDROID_HOME}/tools"
   - DEBIAN_FRONTEND=noninteractive
+  - VERSION_SDK_TOOLS="3859397"
 before_cache:
 - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
 - find . -name "*.lock" -exec rm -rfv {} \;
