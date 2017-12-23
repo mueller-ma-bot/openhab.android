@@ -29,7 +29,7 @@ install:
 - mkdir -p ~/.android
 - touch ~/.android/repositories.cfg
 - echo yes | ${ANDROID_HOME}/tools/bin/sdkmanager --update
-- echo yes | ${ANDROID_HOME}/tools/bin/sdkmanager "add-ons;addon-google_apis-google-24" "build-tools;26.0.2" "extras;android;m2repository" "extras;google;m2repository" "extras;google;google_play_services" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "platform-tools" "platforms;android-26"
+- echo yes | ${ANDROID_HOME}/tools/bin/sdkmanager "add-ons;addon-google_apis-google-24" "build-tools;26.0.2" "extras;android;m2repository" "extras;google;m2repository" "extras;google;google_play_services" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "platform-tools" "platforms;android-26" > /dev/null
 #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
 #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
 - ./gradlew --version
