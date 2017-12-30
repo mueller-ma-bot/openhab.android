@@ -3,46 +3,52 @@ jdk: oraclejdk8
 env:
   global:
   - secure: fMBUkSsCBTw/U907w7Xm/yNzw4lq9yt7zFy0JyEZrA543LI7zQRIclIOtsDTUs0bwY+4KI08MNoYPLJ4TQhSJaH4wQ8b9C5TRsqXNfc0V718TcuYqSXqU6VPRVtX46/fCEWv/HAs0ksUKrHIlpWOwLPQpYDcKxwwlUndaakYKJ8=
-  - ANDROID_HOME="/home/travis/build/mueller-ma-bot/sdk"
-  - PATH="$PATH:${ANDROID_HOME}/tools"
-  - DEBIAN_FRONTEND=noninteractive
-  - VERSION_SDK_TOOLS="3859397"
+
 before_cache:
 - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
 - find . -name "*.lock" -exec rm -rfv {} \;
 - cd ${TRAVIS_BUILD_DIR}
+
 cache:
   directories:
   - "${TRAVIS_BUILD_DIR}/gradle/caches/"
   - "${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/"
+  
 notifications:
   email: false
+
 android:
   components:
   - tools
   - build-tools-25.0.2
   - platform-tools
   - tools
+  - android-22
+  - sys-img-armeabi-v7a-android-22
+  
 install:
-- curl -s https://dl.google.com/android/repository/sdk-tools-linux-${VERSION_SDK_TOOLS}.zip > /home/travis/build/mueller-ma-bot/sdk.zip && unzip /home/travis/build/mueller-ma-bot/sdk.zip -d /home/travis/build/mueller-ma-bot/sdk && rm -v /home/travis/build/mueller-ma-bot/sdk.zip
-- mkdir -p $ANDROID_HOME/licenses/ && echo "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_HOME/licenses/android-sdk-license && echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
-- mkdir -p ~/.android
-- touch ~/.android/repositories.cfg
-- echo yes | ${ANDROID_HOME}/tools/bin/sdkmanager --update
-- echo yes | ${ANDROID_HOME}/tools/bin/sdkmanager "add-ons;addon-google_apis-google-24" "build-tools;26.0.2" "extras;android;m2repository" "extras;google;m2repository" "extras;google;google_play_services" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "platform-tools" "platforms;android-26" > /dev/null
-#- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-#- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
 - ./gradlew --version
 - sdkmanager --list || true
+
+# Emulator Management: Create, Start and Wait
+before_script:
+- echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+- emulator -avd test -no-audio -no-window &
+- android-wait-for-emulator
+- adb shell input keyevent 82 &
+
 script:
-- ./gradlew clean assemble
-- ./gradlew test
-- echo "--" > .adjust_token
-# - ./gradlew jacocoTestReport
+- android list target
+- ./gradlew build connectedCheck test jacocoTestReport
+
 after_script:
 - cat ${TRAVIS_BUILD_DIR}/*/build/reports/lint-results.xml
+
 after_success:
 - bash <(curl -s https://codecov.io/bash)
+
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_903a93ed2309_key -iv $encrypted_903a93ed2309_iv
   -in keystore.enc -out keystore -d
@@ -52,6 +58,7 @@ before_deploy:
   -storepass $storepass mobile-full-release-unsigned.apk sign
 - jarsigner -verify mobile-full-release-unsigned.apk
 - ${ANDROID_HOME}/build-tools/25.0.2/zipalign -v 4 mobile-full-release-unsigned.apk mobile-full-release.apk
+
 deploy:
   provider: releases
   prerelease: true
