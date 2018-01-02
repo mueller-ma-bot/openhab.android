@@ -18,7 +18,7 @@ group_defaults:
 
 groups:
   example-reviewers:
-    required: 2
+    required: 1
 
     users:
       - mueller-ma-bot
