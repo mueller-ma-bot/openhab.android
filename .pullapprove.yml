@@ -23,7 +23,6 @@ groups:
       - kaikreuzer
       - digitaldan
       - ThomDietrich
-      - mueller-ma
 
     conditions:
       branches:
