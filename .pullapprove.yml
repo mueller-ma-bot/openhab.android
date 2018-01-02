@@ -19,7 +19,7 @@ group_defaults:
     enabled: true
  
 groups:
-  example-reviewers:
+  maintainers:
     required: 1
     users:
       - mueller-ma-bot
