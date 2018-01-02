@@ -11,7 +11,8 @@ always_pending:
 group_defaults:
   approve_by_comment:
     enabled: true
-    approve_regex: '^LGTM'
+    approve_regex: '^(Approved|LGTM|:shipit:|:\+1:|Engage)'
+    reject_regex: '^(Rejected|:-1:|Borg)'
   reset_on_push:
     enabled: true
 
