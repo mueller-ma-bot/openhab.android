@@ -28,13 +28,6 @@ groups:
     conditions:
       branches:
         - master  # this group only reviews when PR is merging into master
-      files:
-        include:
-          - '*.md'
-        exclude:
-          - 'README.md'
-      labels:
-        - bug
 
     author_approval:
       required: true
