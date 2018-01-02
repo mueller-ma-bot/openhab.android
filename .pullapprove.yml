@@ -18,7 +18,7 @@ group_defaults:
   reset_on_reopened:
     enabled: true
   author_approval:
-    required: true
+    ignored: true
  
 groups:
   maintainers:
