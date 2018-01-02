@@ -1,12 +1,41 @@
 version: 2
+
+requirements:
+  signed_off_by:
+    required: true
+
+always_pending:
+  title_regex: 'WIP'
+  explanation: 'Work in progress...'
+
+group_defaults:
+  approve_by_comment:
+    enabled: true
+    approve_regex: '^LGTM'
+  reset_on_push:
+    enabled: true
+
 groups:
-  code-review:
-    approve_by_comment:
-      approve_regex: ^Approved
-      enabled: true
-      reject_regex: ^Rejected
+  android-maintainers:
     required: 1
-    reset_on_push:
-      enabled: false
-    users:
-    - mueller-ma-bot
+
+    teams:
+      - android-maintainers      
+    user:
+      - kaikreuzer
+      - digitaldan
+      - ThomDietrich
+      - mueller-ma
+      
+    conditions:
+      branches:
+        - master
+
+    author_approval:
+      auto: true
+
+    reset_on_reopened:
+      enabled: true
+
+    reject_value: -100
+
