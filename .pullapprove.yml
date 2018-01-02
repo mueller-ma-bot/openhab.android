@@ -18,21 +18,15 @@ group_defaults:
 groups:
   maintainers:
     required: 1
-
     user:
       - kaikreuzer
       - digitaldan
       - ThomDietrich
-
     conditions:
       branches:
         - master
-
     author_approval:
       auto: true
-
     reset_on_reopened:
       enabled: true
-
     reject_value: -100
-
