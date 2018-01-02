@@ -24,7 +24,10 @@ groups:
   maintainers:
     required: 1
     users:
-      - mueller-ma-bot
+      - kaikreuzer
+      - digitaldan
+      - ThomDietrich
+      - mueller-ma
     conditions:
       branches:
         - master
