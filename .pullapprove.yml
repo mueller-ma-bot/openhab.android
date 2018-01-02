@@ -15,7 +15,9 @@ group_defaults:
     reject_regex: '^(Rejected|:-1:|Borg)'
   reset_on_push:
     enabled: true
-
+  reset_on_reopened:
+    enabled: true
+ 
 groups:
   example-reviewers:
     required: 1
@@ -34,14 +36,9 @@ groups:
       labels:
         - bug
 
-    approve_by_comment:
-      enabled: true
-      approve_regex: '^LGTM'  # overrides the default '^:\+1:'
-
     author_approval:
       required: true
 
-    reset_on_reopened:
-      enabled: true
+
 
     reject_value: -3
