@@ -21,17 +21,11 @@ group_defaults:
 groups:
   example-reviewers:
     required: 1
-
     users:
       - mueller-ma-bot
-
     conditions:
       branches:
         - master
-
     author_approval:
       required: true
-
-
-
     reject_value: -3
