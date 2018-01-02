@@ -16,7 +16,7 @@ group_defaults:
     enabled: true
 
 groups:
-  android-maintainers:
+  maintainers:
     required: 1
 
     user:
