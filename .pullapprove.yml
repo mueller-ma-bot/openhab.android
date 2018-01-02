@@ -27,7 +27,7 @@ groups:
 
     conditions:
       branches:
-        - master  # this group only reviews when PR is merging into master
+        - master
 
     author_approval:
       required: true
