@@ -23,7 +23,7 @@ group_defaults:
 groups:
   maintainers:
     required: 1
-    user:
+    users:
       - mueller-ma-bot
     conditions:
       branches:
