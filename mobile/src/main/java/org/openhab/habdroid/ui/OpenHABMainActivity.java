@@ -246,6 +246,10 @@ public class OpenHABMainActivity extends AppCompatActivity implements OnWidgetSe
     protected void onNewIntent(Intent intent) {
         processIntent(intent);
     }
+                
+    public void foo (int  a){
+        a +=a;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
