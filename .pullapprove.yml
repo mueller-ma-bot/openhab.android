@@ -21,8 +21,7 @@ groups:
     required: 2
 
     users:
-      - username_one
-      - username_two
+      - mueller-ma-bot
 
     conditions:
       branches:
