@@ -5,7 +5,7 @@ requirements:
     required: true
 
 always_pending:
-  title_regex: 'WIP'
+  title_regex: '(WIP|wip)'
   explanation: 'Work in progress...'
 
 group_defaults:
@@ -28,4 +28,4 @@ groups:
         - master
     author_approval:
       required: true
-    reject_value: -3
+    reject_value: -100
