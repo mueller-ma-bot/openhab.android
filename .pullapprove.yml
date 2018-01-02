@@ -19,8 +19,6 @@ groups:
   android-maintainers:
     required: 1
 
-    teams:
-      - android-maintainers      
     user:
       - kaikreuzer
       - digitaldan
