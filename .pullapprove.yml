@@ -19,16 +19,15 @@ group_defaults:
     enabled: true
   author_approval:
     ignored: true
- 
+
 groups:
   maintainers:
     required: 1
-    users:
-      - kaikreuzer
-      - digitaldan
-      - ThomDietrich
-      - mueller-ma
+    user:
+      - mueller-ma-bot
     conditions:
       branches:
         - master
     reject_value: -100
+    author_approval:
+      auto: true
