@@ -27,5 +27,5 @@ groups:
       branches:
         - master
     author_approval:
-      required: true
+      auto: true
     reject_value: -100
