@@ -17,6 +17,8 @@ group_defaults:
     enabled: true
   reset_on_reopened:
     enabled: true
+  author_approval:
+    required: true
  
 groups:
   maintainers:
@@ -26,6 +28,4 @@ groups:
     conditions:
       branches:
         - master
-    author_approval:
-      auto: true
     reject_value: -100
