@@ -1,5 +1,7 @@
 package org.openhab.habdroid.model;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,17 +9,60 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class OpenHAB2Widget extends OpenHABWidget {
+    private final static String TAG = OpenHAB2Widget.class.getSimpleName();
+    private String iconFormat;
+
     public OpenHAB2Widget() {
+        iconFormat="null";
     }
 
     @Override
     public String getIconPath() {
         OpenHABItem widgetItem = getItem();
-        String itemState = (widgetItem != null) ? widgetItem.getState() : null;
-        return String.format("icon/%s?state=%s", getIcon(), itemState);
+        String itemState;
+        if (widgetItem != null) {
+            itemState = widgetItem.getState();
+            if(itemState == null) {
+                Log.e(TAG, "itemState is null");
+            } else if (widgetItem.getType().equals("Color") || (widgetItem.getGroupType() != null && widgetItem.getGroupType().equals("Color"))) {
+                // For items that control a color item fetch the correct icon
+                if (getType().equals("Slider") || (getType().equals("Switch") && ! hasMappings())) {
+                    try {
+                        itemState = String.valueOf(widgetItem.getStateAsBrightness());
+                        if(getType().equals("Switch")) {
+                            if (itemState.equals("0")) {
+                                itemState = "OFF";
+                            } else {
+                                itemState = "ON";
+                            }
+                        }
+                    } catch (Exception e) {
+                        itemState = "OFF";
+                    }
+                }
+            } else if(getType().equals("Switch") && ! hasMappings()) {
+                // For switch items without mappings (just ON and OFF) that control a dimmer item
+                // set the state to "OFF" instead of 0 or to "ON" to fetch the correct icon
+                try {
+                    int itemStateNumber = Integer.valueOf(itemState);
+                    if (itemStateNumber == 0) {
+                        itemState = "OFF";
+                    } else {
+                        itemState = "ON";
+                    }
+                } catch (java.lang.NumberFormatException e) {
+                    // Item state is not a number, not sure if that can happen, but good to catch
+                }
+            }
+        } else {
+            itemState = null;
+        }
+
+        return String.format("icon/%s?state=%s&format=%s", getIcon(), itemState, iconFormat);
     }
 
-    private OpenHAB2Widget(OpenHABWidget parent, JSONObject widgetJson) {
+    private OpenHAB2Widget(OpenHABWidget parent, JSONObject widgetJson, String iconFormat) {
+        this.iconFormat = iconFormat;
         this.parent = parent;
         this.children = new ArrayList<OpenHABWidget>();
         this.mappings = new ArrayList<OpenHABWidgetMapping>();
@@ -59,6 +104,8 @@ public class OpenHAB2Widget extends OpenHABWidget {
                 this.setPeriod(widgetJson.getString("period"));
             if (widgetJson.has("service"))
                 this.setService(widgetJson.getString("service"));
+            if (widgetJson.has("legend"))
+                this.setLegend(widgetJson.getBoolean("legend"));
             if (widgetJson.has("height"))
                 this.setHeight(widgetJson.getInt("height"));
             if (widgetJson.has("iconcolor"))
@@ -77,7 +124,7 @@ public class OpenHAB2Widget extends OpenHABWidget {
             try {
                 JSONArray childWidgetJsonArray = widgetJson.getJSONArray("widgets");
                 for (int i=0; i<childWidgetJsonArray.length(); i++) {
-                    createOpenHABWidgetFromJson(this, childWidgetJsonArray.getJSONObject(i));
+                    createOpenHABWidgetFromJson(this, childWidgetJsonArray.getJSONObject(i), iconFormat);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -86,7 +133,7 @@ public class OpenHAB2Widget extends OpenHABWidget {
         this.parent.addChildWidget(this);
     }
 
-    public static OpenHABWidget createOpenHABWidgetFromJson(OpenHABWidget parent, JSONObject widgetJson) {
-        return new OpenHAB2Widget(parent, widgetJson);
+    public static OpenHABWidget createOpenHABWidgetFromJson(OpenHABWidget parent, JSONObject widgetJson, String iconFormat) {
+        return new OpenHAB2Widget(parent, widgetJson, iconFormat);
     }
 }

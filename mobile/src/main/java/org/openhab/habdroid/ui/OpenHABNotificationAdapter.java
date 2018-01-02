@@ -11,6 +11,7 @@ package org.openhab.habdroid.ui;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ public class OpenHABNotificationAdapter extends ArrayAdapter<OpenHABNotification
     private int mResource;
     private String mOpenHABUsername;
     private String mOpenHABPassword;
+    private String mOpenHABBaseUrl;
 
     public OpenHABNotificationAdapter(Context context, int resource, ArrayList<OpenHABNotification> objects) {
         super(context, resource, objects);
@@ -49,11 +51,15 @@ public class OpenHABNotificationAdapter extends ArrayAdapter<OpenHABNotification
         MySmartImageView imageView = (MySmartImageView)convertView.findViewById(R.id.notificationImage);
         if (imageView != null) {
             if (notification.getIcon() != null && imageView != null) {
-                String iconUrl = Constants.MYOPENHAB_BASE_URL + "/images/" + Uri.encode(notification.getIcon() + ".png");
-                imageView.setImageUrl(iconUrl, R.drawable.openhabiconsmall,
+                String iconUrl = mOpenHABBaseUrl + "/images/" + Uri.encode(notification.getIcon() + ".png");
+                imageView.setImageUrl(iconUrl, R.drawable.icon_blank,
                         mOpenHABUsername, mOpenHABPassword);
             } else {
-                imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.openhab));
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    imageView.setImageDrawable(getContext().getDrawable(R.drawable.icon_blank));
+                } else {
+                    imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.icon_blank));
+                }
             }
         }
         createdView.setText(DateUtils.getRelativeDateTimeString(this.getContext(), notification.getCreated().getTime(), DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0));
@@ -75,5 +81,13 @@ public class OpenHABNotificationAdapter extends ArrayAdapter<OpenHABNotification
 
     public void setOpenHABPassword(String openHABPassword) {
         this.mOpenHABPassword = openHABPassword;
+    }
+
+    public String getOpenHABBaseUrl() {
+        return mOpenHABBaseUrl;
+    }
+
+    public void setOpenHABBaseUrl(String mOpenHABBaseUrl) {
+        this.mOpenHABPassword = mOpenHABBaseUrl;
     }
 }

@@ -9,6 +9,8 @@
 
 package org.openhab.habdroid.core;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -18,18 +20,18 @@ import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.entity.StringEntity;
 import org.openhab.habdroid.R;
 import org.openhab.habdroid.util.Constants;
 import org.openhab.habdroid.util.ContinuingIntentService;
 import org.openhab.habdroid.util.MyAsyncHttpClient;
+import org.openhab.habdroid.util.MyHttpClient;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+import okhttp3.Call;
+import okhttp3.Headers;
 
 /**
  * This service handles voice commands and sends them to OpenHAB.
@@ -66,7 +68,9 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
         SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         String username = mSettings.getString(Constants.PREFERENCE_USERNAME, null);
         String password = mSettings.getString(Constants.PREFERENCE_PASSWORD, null);
-        mAsyncHttpClient = new MyAsyncHttpClient(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mAsyncHttpClient = new MyAsyncHttpClient(this, prefs.getBoolean(Constants.PREFERENCE_SSLHOST,
+                false), prefs.getBoolean(Constants.PREFERENCE_SSLCERT, false));
         mAsyncHttpClient.setBasicAuth(username, password);
     }
 
@@ -76,10 +80,10 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
         bufferIntent(intent);
         if (intent.hasExtra(OPENHAB_BASE_URL_EXTRA)) {
             Log.d(TAG, "openHABBaseUrl passed as Intent");
-            onOpenHABTracked(intent.getStringExtra(OPENHAB_BASE_URL_EXTRA), null);
+            onOpenHABTracked(intent.getStringExtra(OPENHAB_BASE_URL_EXTRA));
         } else if (mOpenHABTracker == null) {
             Log.d(TAG, "No openHABBaseUrl passed, starting OpenHABTracker");
-            mOpenHABTracker = new OpenHABTracker(OpenHABVoiceService.this, getString(R.string.openhab_service_type), false);
+            mOpenHABTracker = new OpenHABTracker(OpenHABVoiceService.this, getString(R.string.openhab_service_type));
             mOpenHABTracker.start();
         }
     }
@@ -99,7 +103,7 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
     }
 
     @Override
-    public void onOpenHABTracked(String baseUrl, String message) {
+    public void onOpenHABTracked(String baseUrl) {
         Log.d(TAG, "onOpenHABTracked(): " + baseUrl);
         mOpenHABBaseUrl = baseUrl;
         while (!mBufferedIntents.isEmpty()) {
@@ -109,9 +113,37 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
         stopSelf(getLastStartId());
     }
 
+    /**
+     * @param message message to show
+     * @param messageType must be Constants.MESSAGES.DIALOG or Constants.MESSAGES.TOAST
+     * @param logLevel not implemented
+     */
+    public void showMessageToUser(String message, int messageType, int logLevel) {
+        if(message == null) {
+            return;
+        }
+        switch (messageType) {
+            case Constants.MESSAGES.DIALOG:
+                AlertDialog.Builder builder = new AlertDialog.Builder(OpenHABVoiceService.this);
+                builder.setMessage(message)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+                break;
+            case Constants.MESSAGES.TOAST:
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                break;
+            default:
+                throw new IllegalArgumentException("Message type not implemented");
+        }
+    }
+
     @Override
     public void onError(String error) {
-        showToast(error);
+        showMessageToUser(error, Constants.MESSAGES.DIALOG, Constants.MESSAGES.LOGLEVEL.ALWAYS);
         Log.d(TAG, "onError(): " + error);
         stopSelf();
     }
@@ -126,7 +158,7 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
                 sendItemCommand("VoiceCommand", voiceCommand);
             } else {
                 Log.w(TAG, "Couldn't determine OpenHAB URL");
-                showToast("Couldn't determine OpenHAB URL");
+                showToast(getString(R.string.error_couldnt_determine_openhab_url));
             }
         }
     }
@@ -147,13 +179,13 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
     private void sendItemCommand(final String itemName, final String command) {
         Log.d(TAG, "sendItemCommand(): itemName=" + itemName + ", command=" + command);
         try {
-            performHttpPost(itemName, new StringEntity(command, "UTF-8"));
+            performHttpPost(itemName, command);
         } catch (RuntimeException e) {
             Log.e(TAG, "Unable to encode command " + command, e);
         }
     }
 
-    private void performHttpPost(final String itemName, final StringEntity command) {
+    private void performHttpPost(final String itemName, final String command) {
         /* Call MyAsyncHttpClient on the main UI thread in order to retrieve the callbacks correctly.
          * If calling MyAsyncHttpClient directly, the following would happen:
          * (1) MyAsyncHttpClient performs the HTTP post asynchronously
@@ -164,15 +196,15 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                mAsyncHttpClient.post(OpenHABVoiceService.this, mOpenHABBaseUrl + "rest/items/" + itemName,
-                        command, "text/plain;charset=UTF-8", new AsyncHttpResponseHandler() {
+                mAsyncHttpClient.post(mOpenHABBaseUrl + "rest/items/" + itemName,
+                        command, "text/plain;charset=UTF-8", new MyHttpClient.ResponseHandler() {
                             @Override
-                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            public void onSuccess(Call call, int statusCode, Headers headers, byte[] responseBody) {
                                 Log.d(TAG, "Command was sent successfully");
                             }
 
                             @Override
-                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                            public void onFailure(Call call, int statusCode, Headers headers, byte[] responseBody, Throwable error) {
                                 Log.e(TAG, "Got command error " + statusCode, error);
                             }
                         });
@@ -201,7 +233,7 @@ public class OpenHABVoiceService extends ContinuingIntentService implements Open
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                showMessageToUser(message, Constants.MESSAGES.TOAST, Constants.MESSAGES.LOGLEVEL.ALWAYS);
             }
         });
     }

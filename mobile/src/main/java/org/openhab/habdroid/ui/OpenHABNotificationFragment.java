@@ -19,20 +19,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestHandle;
-
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.habdroid.R;
 import org.openhab.habdroid.model.OpenHABNotification;
-import org.openhab.habdroid.util.Constants;
+import org.openhab.habdroid.util.MyAsyncHttpClient;
+import org.openhab.habdroid.util.MyHttpClient;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
+import okhttp3.Call;
+import okhttp3.Headers;
 
 /**
  * A fragment representing a list of Items.
@@ -47,26 +46,29 @@ public class OpenHABNotificationFragment extends ListFragment implements SwipeRe
 
     private static final String ARG_USERNAME = "openHABUsername";
     private static final String ARG_PASSWORD = "openHABPassword";
+    private static final String ARG_BASEURL = "openHABBaseUrl";
 
     private String openHABUsername = "";
     private String openHABPassword = "";
+    private String openHABBaseURL = "";
 
     private OpenHABMainActivity mActivity;
     // loopj
-    private AsyncHttpClient mAsyncHttpClient;
+    private MyAsyncHttpClient mAsyncHttpClient;
     // keeps track of current request to cancel it in onPause
-    private RequestHandle mRequestHandle;
+    private Call mRequestHandle;
 
     private OpenHABNotificationAdapter mNotificationAdapter;
     private ArrayList<OpenHABNotification> mNotifications;
 
     private SwipeRefreshLayout mSwipeLayout;
 
-    public static OpenHABNotificationFragment newInstance(String username, String password) {
+    public static OpenHABNotificationFragment newInstance(String baseURL, String username, String password) {
         OpenHABNotificationFragment fragment = new OpenHABNotificationFragment();
         Bundle args = new Bundle();
         args.putString(ARG_USERNAME, username);
         args.putString(ARG_PASSWORD, password);
+        args.putString(ARG_BASEURL, baseURL);
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,6 +88,7 @@ public class OpenHABNotificationFragment extends ListFragment implements SwipeRe
         if (getArguments() != null) {
             openHABUsername = getArguments().getString(ARG_USERNAME);
             openHABPassword = getArguments().getString(ARG_PASSWORD);
+            openHABBaseURL =  getArguments().getString(ARG_BASEURL);
         }
     }
 
@@ -147,7 +150,7 @@ public class OpenHABNotificationFragment extends ListFragment implements SwipeRe
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    mRequestHandle.cancel(true);
+                    mRequestHandle.cancel();
                 }
             });
             thread.start();
@@ -175,9 +178,9 @@ public class OpenHABNotificationFragment extends ListFragment implements SwipeRe
     private void loadNotifications() {
         if (mAsyncHttpClient != null) {
             startProgressIndicator();
-            mRequestHandle = mAsyncHttpClient.get(Constants.MYOPENHAB_BASE_URL + "/api/v1/notifications?limit=20", new AsyncHttpResponseHandler() {
+            mRequestHandle = mAsyncHttpClient.get(openHABBaseURL + "/api/v1/notifications?limit=20", new MyHttpClient.ResponseHandler() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                public void onSuccess(Call call, int statusCode, Headers headers, byte[] responseBody) {
                     stopProgressIndicator();
                     Log.d(TAG, "Notifications request success");
                     try {
@@ -204,7 +207,7 @@ public class OpenHABNotificationFragment extends ListFragment implements SwipeRe
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                public void onFailure(Call call, int statusCode, Headers headers, byte[] responseBody, Throwable error) {
                     stopProgressIndicator();
                     Log.d(TAG, "Notifications request failure");
                 }
