@@ -30,7 +30,6 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
-  - extra-android-support
   - $ANDROID_TARGET
 
 install:
@@ -44,7 +43,8 @@ install:
 before_script:
 - android list device
 - android list target
-- echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI -d "5.4in FWVGA"
+- if [[ $ANDROID_TARGET == "android-22" ]]; then echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI -d "5.4in FWVGA"; fi
+- if [[ $ANDROID_TARGET == "android-27" ]]; then echo no | avdmanager create avd --force -n test -k "system-images;$ANDROID_TARGET;$ANDROID_TAG;$ANDROID_ABI" -d "5.4in FWVGA"; fi
 - emulator -avd test -no-window &
 - android-wait-for-emulator
 - adb shell input keyevent 82 &
