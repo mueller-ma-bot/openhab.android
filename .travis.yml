@@ -5,8 +5,8 @@ env:
   - secure: fMBUkSsCBTw/U907w7Xm/yNzw4lq9yt7zFy0JyEZrA543LI7zQRIclIOtsDTUs0bwY+4KI08MNoYPLJ4TQhSJaH4wQ8b9C5TRsqXNfc0V718TcuYqSXqU6VPRVtX46/fCEWv/HAs0ksUKrHIlpWOwLPQpYDcKxwwlUndaakYKJ8=
   - ADB_INSTALL_TIMEOUT=8
   matrix:
-    - ANDROID_TARGET=android-22 ANDROID_ABI=armeabi-v7a
-    - ANDROID_TARGET=android-27 ANDROID_ABI=x86
+    - ANDROID_TARGET=android-22 ANDROID_ABI=armeabi-v7a ANDROID_TAG=default
+    - ANDROID_TARGET=android-27 ANDROID_ABI=x86 ANDROID_TAG=google_apis
 
 before_cache:
 - cd ${TRAVIS_BUILD_DIR}/gradle/caches/
@@ -32,11 +32,11 @@ android:
   - extra-android-m2repository
   - extra-android-support
   - $ANDROID_TARGET
-  - sys-img-$ANDROID_ABI-$ANDROID_TARGET
 
 install:
 - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
 - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+- echo yes | sdkmanager "system-images;$ANDROID_TARGET;$ANDROID_TAG;$ANDROID_ABI"
 - ./gradlew --version
 - sdkmanager --list || true
 
