@@ -33,11 +33,11 @@ stages:
 jobs:
     include:
         - stage: test
-          script: bash travis/install.sh && ./gradlew FossTest
-        - script: bash travis/install.sh && ./gradlew FullTest
-        - script: bash travis/install.sh && bash travis/prepare-deploy.sh && ./gradlew FossConnectedCheck
-        - script: bash travis/install.sh && bash travis/prepare-deploy.sh && ./gradlew FullConnectedCheck
-        - script: bash travis/install.sh && ./gradlew jacocoTestReport
+          script: bash travis/install.sh && ./gradlew fossTest
+        - script: bash travis/install.sh && ./gradlew fullTest
+        - script: bash travis/install.sh && bash travis/start-emulator.sh && ./gradlew fossConnectedCheck
+        - script: bash travis/install.sh && bash travis/start-emulator.sh && ./gradlew fullConnectedCheck
+        - script: bash travis/install.sh && ./gradlew jacocoTestReport && bash <(curl -s https://codecov.io/bash)
         - script: bash assets/store_descriptions/generate_and_validate.sh
         - stage: deploy
           script: bash travis/prepare-deploy.sh
