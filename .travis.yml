@@ -27,15 +27,17 @@ android:
   - sys-img-armeabi-v7a-android-22
 
 stages:
-    - compile
-    - unitTest
-    - androidTest
+    - test
     - deploy
 
 jobs:
     include:
-        - stage: compile
-          script: bash travis/install.sh
-        - stage: unitTest
-          script: ./gradlew FossTest
-          script: ./gradlew FullTest
+        - stage: test
+          script: bash travis/install.sh && ./gradlew FossTest
+        - script: bash travis/install.sh && ./gradlew FullTest
+        - script: bash travis/install.sh && bash travis/prepare-deploy.sh && ./gradlew FossConnectedCheck
+        - script: bash travis/install.sh && bash travis/prepare-deploy.sh && ./gradlew FullConnectedCheck
+        - script: bash travis/install.sh && ./gradlew jacocoTestReport
+        - script: bash assets/store_descriptions/generate_and_validate.sh
+        - stage: deploy
+          script: bash travis/prepare-deploy.sh
