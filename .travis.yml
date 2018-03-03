@@ -33,15 +33,15 @@ stages:
 jobs:
     include:
         - stage: test
-          script: bash travis/install.sh && ./gradlew fossTest
+          script: bash travis/install.sh && ./gradlew :mobile:testFossDebugUnitTest
           env: DESC="Foss unit tests"
-        - script: bash travis/install.sh && ./gradlew fullTest
+        - script: bash travis/install.sh && ./gradlew :mobile:testFullDebugUnitTest
           env: DESC="Full unit tests"
-        - script: bash travis/install.sh && bash travis/start-emulator.sh && ./gradlew fossConnectedCheck
+        - script: bash travis/install.sh && bash travis/start-emulator.sh && ./gradlew :mobile:connectedFossDebugAndroidTest
           env: DESC="Foss Android tests"
-        - script: bash travis/install.sh && bash travis/start-emulator.sh && ./gradlew fullConnectedCheck
+        - script: bash travis/install.sh && bash travis/start-emulator.sh && ./gradlew :mobile:connectedFullDebugAndroidTest
           env: DESC="Full Android tests"
-        - script: bash travis/install.sh && ./gradlew jacocoTestReport && bash <(curl -s https://codecov.io/bash)
+        - script: bash travis/install.sh && ./gradlew :mobile:jacocoTestReport :mobile:createFossDebugCoverageReport :mobile:createFullDebugCoverageReport && bash <(curl -s https://codecov.io/bash)
           env: DESC="Codecov"
         - script: bash assets/store_descriptions/generate_and_validate.sh
           env: DESC="Validate translations"
