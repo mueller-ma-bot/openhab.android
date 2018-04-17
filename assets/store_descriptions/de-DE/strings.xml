@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <strings>
-    <intro></intro>
-    <whatis></whatis>
-    <rules></rules>
-    <supported></supported>
+    <intro>one slash /</intro>
+    <whatis>one backslash \</whatis>
+    <rules>one tag &lt;string></rules>
+    <supported>one closing tag &lt;/string></supported>
     <bindings>  </bindings>
 
     <home_automation_solutions></home_automation_solutions>
