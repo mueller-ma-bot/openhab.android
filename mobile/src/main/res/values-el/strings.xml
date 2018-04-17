@@ -39,7 +39,6 @@
   <string name="settings_openhab_fullscreen">Πλήρης Οθόνη</string>
   <string name="settings_openhab_fullscreen_summary">Προβολή σε πλήρη οθόνη</string>
   <string name="settings_openhab_icon_format">Μορφή εικονιδίου</string>
-  <string name="settings_openhab_icon_format_png">Bitmap</string>
   <string name="settings_openhab_icon_format_svg">Διάνυσμα</string>
   <string name="settings_ringtone">Ήχος κλήσης</string>
   <string name="settings_clear_default_sitemap">Καθαρισμός προκαθορισμένου sitemap</string>
@@ -96,7 +95,6 @@
   <string name="info_write_tag_disabled">Το NFC είναι απενεργοποιημένο. Παρακαλώ ενεργοποιήστε το από το μενού ρυθμίσεων συσκευής.</string>
   <string name="info_openhab_version_label">Έκδοση openHAB</string>
   <string name="info_openhab_apiversion_label">Έκδοση openHAB Rest API</string>
-  <string name="info_openhab_uuid_label">openHAB UUID</string>
   <string name="info_openhab_secret_label">Μυστικό openHAB</string>
   <string name="info_openhab_push_notification_label">Κατάσταση ειδοποιήσεων</string>
   <string name="action_settings">Ρυθμίσεις</string>
