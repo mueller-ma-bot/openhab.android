@@ -96,7 +96,6 @@
   <string name="info_write_tag_disabled">NFC выключено. Пожалуйста включите в настройках устройства.</string>
   <string name="info_openhab_version_label">Версия openHAB</string>
   <string name="info_openhab_apiversion_label">openHAB Rest API Версия</string>
-  <string name="info_openhab_uuid_label">openHAB UUID</string>
   <string name="info_openhab_secret_label">openHAB секрет</string>
   <string name="action_settings">Параметры</string>
   <string name="nfc_dialog_title">Выберите действие тега NFC</string>
