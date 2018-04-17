@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <strings>
-    <intro></intro>
+    <intro>openHAB - "&#x5D4;&#x5E2;&#x5E6;&#x5DE;&#x5EA; &#x5D4;&#x5D1;&#x5D9;&#x5EA; &#x5D4;&#x5D7;&#x5DB;&#x5DD;" - &#x5E4;&#x5E8;&#x5D5;&#x5D9;&#x5D9;&#x5E7;&#x5D8; &#x5E7;&#x5D5;&#x5D3; &#x5E4;&#x5EA;&#x5D5;&#x5D7; &#x5DC;&#x5D1;&#x5D9;&#x5EA; &#x5D7;&#x5DB;&#x5DD; &#x5DC;&#x5D0;&#x5E0;&#x5E9;&#x5D9;&#x5DD; &#x5D5;&#x5D7;&#x5D1;&#x5E8;&#x5D5;&#x5EA; &#x5D1;&#x5E8;&#x5D0;&#x5D9;&#x5D9;&#x5D4; &#x5D8;&#x5DB;&#x5E0;&#x5D5;&#x5DC;&#x5D5;&#x5D2;&#x5D9;&#x5EA; &#x5DE;&#x5EA;&#x5E7;&#x5D3;&#x5DE;&#x5EA;</intro>
     <whatis></whatis>
     <rules></rules>
     <supported></supported>
