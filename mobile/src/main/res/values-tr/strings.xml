@@ -36,7 +36,6 @@
   <string name="settings_openhab_fullscreen">Tam Ekran</string>
   <string name="settings_openhab_fullscreen_summary">Tam ekran modunda görüntüle</string>
   <string name="settings_openhab_icon_format">Simge formatı</string>
-  <string name="settings_openhab_icon_format_png">Bitmap</string>
   <string name="settings_openhab_icon_format_svg">Vektör</string>
   <string name="settings_ringtone">Zil Tonu</string>
   <string name="settings_clear_default_sitemap">Varsayılan site haritasını temizle</string>
@@ -74,7 +73,6 @@
   <string name="info_write_tag_disabled">NFC devre dışı. Lütfen ayarlar bölümünden NFC\'yi devreye sokunuz.</string>
   <string name="info_openhab_version_label">openHAB Versiyon</string>
   <string name="info_openhab_apiversion_label">openHAB Rest API versiyon</string>
-  <string name="info_openhab_uuid_label">openHAB UUID</string>
   <string name="info_openhab_secret_label">openHAB Parola</string>
   <string name="action_settings">Ayarlar</string>
   <string name="nfc_dialog_title">Bu element için NFC eylem etiketi yazınız</string>
