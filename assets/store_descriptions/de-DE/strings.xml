@@ -4,9 +4,9 @@
     <whatis>one backslash \</whatis>
     <rules>one tag &lt;string></rules>
     <supported>one closing tag &lt;/string></supported>
-    <bindings>  </bindings>
+    <bindings>one single quote '  </bindings>
 
-    <home_automation_solutions></home_automation_solutions>
+    <home_automation_solutions>one double quote "</home_automation_solutions>
     <lighting></lighting>
     <heating></heating>
     <home_entertainment></home_entertainment>
@@ -26,5 +26,5 @@
     <oh_server></oh_server>
     <short_description></short_description>
     <fdroid></fdroid>
-    <fdroid_beta></fdroid_beta>
+    <fdroid_beta>Link: [[org.openhab.habdroid]]</fdroid_beta>
 </strings>
