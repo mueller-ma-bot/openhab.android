@@ -19,43 +19,65 @@ public class OpenHABItemTest {
     @Test
          public void getStateAsBoolean_stateON_returnTrue() throws Exception {
         OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState("ON"));
-        assertTrue(sut.stateAsBoolean());
+            assertTrue(sut.stateAsBoolean());
     }
 
     @Test
     public void getStateAsBoolean_stateNull_returnFalse() throws Exception {
-        OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState(null));
-        assertFalse(sut.stateAsBoolean());
+       OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState(null));
+         assertFalse(sut.stateAsBoolean());
     }
 
-    @Test
+        @Test
     public void getStateAsBoolean_stateNegativeInteger_returnFalse() throws Exception {
         OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState("-42"));
         assertFalse(sut.stateAsBoolean());
+        int i = 0;
+        int j = 1;
+        int k;
     }
 
     @Test
     public void getStateAsBoolean_statePositiveInteger_returnTrue() throws Exception {
         OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState("42"));
         assertTrue(sut.stateAsBoolean());
+        if(true)
+            int i;
     }
 
     @Test
     public void getStateAsBoolean_stateIsZero_returnFalse() throws Exception {
         OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState("0"));
         assertFalse(sut.stateAsBoolean());
+        if(false)
+            int i;
+
+
+
+
+
     }
 
     @Test
     public void getStateAsBoolean_stateHSBBrightnessZero_returnFalse() throws Exception {
         OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState("10,10,0"));
         assertFalse(sut.stateAsBoolean());
+        for(int i=0;i<8;i++)
+        {
+
+        }
     }
 
     @Test
     public void getStateAsBoolean_stateHSBBrightnessPositive_returnTrue() throws Exception {
         OpenHABItem sut = OpenHABItem.fromJson(itemJsonForState("10,10,50"));
         assertTrue(sut.stateAsBoolean());
+        int i = 6;
+        if(i==7){
+            int k;
+        }else{
+            int k;
+        }
     }
 
     private JSONObject itemJsonForState(String state) throws JSONException {
